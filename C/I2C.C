@@ -7,7 +7,6 @@
  * V1.0.0 16/05/2021
  */
 
-
 #include <I2C.H>
 #include <sys.h> 
 
