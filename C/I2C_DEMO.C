@@ -130,7 +130,7 @@ void Read_Temp(int tc74_addr)
     }
     last_byte_read = byte_read;
     /* Pause between reads */
-    Delay(80000);
+    Delay(65535);
   }
   I2C_Stop();
   getch();
