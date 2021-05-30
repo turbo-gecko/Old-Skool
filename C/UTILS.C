@@ -1,6 +1,7 @@
 /*
  * Miscellaneous utility functions by Gary Hammond
  *
+ * V1.0.1 30/05/2021 - Added BDCto Decimal and DecimalToBCD functions
  * V1.0.0 29/05/2021
  */
 
@@ -11,6 +12,16 @@
 #define MAX_LINE_SIZE   76
 #define MAX_KEY_SIZE    38
 #define MAX_VALUE_SIZE  38
+
+char BCDToDecimal (char bcdByte)
+{
+   return((bcdByte / 16 * 10) + (bcdByte % 16));
+}
+
+char DecimalToBCD (char decimalByte)
+{
+ return (((decimalByte / 10) << 4) | (decimalByte % 10));
+}
 
 /*
  * For RC2014 platform with a Z80 running at 7.3728MHz, the time delay can
