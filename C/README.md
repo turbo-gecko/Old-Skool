@@ -18,7 +18,7 @@ Functions include:
 * unsigned Hex2Int(char *hex);
 * char * ReadCfgItem(char *filename, char *key);
 
-I2C.CFG is a text file used to contain key=value pairs that can be read using the ReadCfgItem function from UTILS.C. This allows changes to master and slave settings without having to recompile the code. There is a line limit of 76 characters including the end of line characters with a 36 character limit for the key and the value. Any line beginning with a '#' will be ignored as well as any line without an '=' in it.
+I2C.CFG is a text file used to contain key=value pairs that can be read using the ReadCfgItem function from UTILS.C. This allows changes to master and slave settings without having to recompile the code. There is a line limit of 76 characters including the end of line characters with a 36 character limit for the key and the value. Any line beginning with a '#' will be ignored as well as any line without an '=' in it. If a key is not found, an empty string is returned for the value.
 
 To build I2C_DEMO.C using HiTech C compiler, type the following on the command line
 
