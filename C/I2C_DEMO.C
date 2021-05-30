@@ -6,6 +6,7 @@
  *
  * SC406 example is from code by Kurt Pieper. Thanks!
  *
+ * V1.0.1 30/05/2021 - Changed slave addressing
  * V1.0.0 30/05/2021
  */
 
@@ -28,9 +29,9 @@ main()
   SC407_Demo();
 }
 
-void Flash_LEDs(int pcf_out)
+void Flash_LEDs(int wr_addr)
 {
-  /* Demo using the SC407 to flash alternate LED's
+  /* Demo using the SC405/SC407 to flash alternate LED's
      Note: The SC407 LED's are active low so the values
      sent to light the LED's are inverted */
   char ret_code = 0;
@@ -39,7 +40,7 @@ void Flash_LEDs(int pcf_out)
   {
     /* Output alternate bit pattern 1 */
     I2C_Start();
-    ret_code = I2C_Write(pcf_out);
+    ret_code = I2C_Write(wr_addr);
     ret_code = I2C_Write(0xAA);
     I2C_Stop();
 
@@ -48,7 +49,7 @@ void Flash_LEDs(int pcf_out)
 
     /* Output alternate bit pattern 2 */
     I2C_Start();
-    ret_code = I2C_Write(pcf_out);
+    ret_code = I2C_Write(wr_addr);
     ret_code = I2C_Write(0x55);
     I2C_Stop();
 
@@ -59,12 +60,12 @@ void Flash_LEDs(int pcf_out)
 
   /* Turn off the LED's */
   I2C_Start();
-  ret_code = I2C_Write(pcf_out);
+  ret_code = I2C_Write(wr_addr);
   ret_code = I2C_Write(0xFF);
   I2C_Stop();
 }
 
-void Read_Buttons(int pcf_in)
+void Read_Buttons(int rd_addr)
 {
   char ret_code = 0;
   int count = 0;
@@ -73,7 +74,7 @@ void Read_Buttons(int pcf_in)
 
   /* Read the pushbuttons. Press a key to quit */
   I2C_Start();
-  ret_code = I2C_Write(pcf_in);
+  ret_code = I2C_Write(rd_addr);
   while(!kbhit())
   {
     byte_read = I2C_Read(ACK);
@@ -101,7 +102,7 @@ void Read_Buttons(int pcf_in)
   getch();
 }
 
-void Read_Temp(int tc74_addr)
+void Read_Temp(int rd_addr)
 {
   unsigned char bcd;
   unsigned char byte_read = 0;
@@ -111,12 +112,12 @@ void Read_Temp(int tc74_addr)
   /* Read TC74. Press a key to quit */
   I2C_Start();
   I2C_Write(0x00);
-  I2C_Write(tc74_addr);
+  I2C_Write(rd_addr);
   while(!kbhit())
   {
     I2C_Stop();
     I2C_Start();
-    I2C_Write(tc74_addr + 1);
+    I2C_Write(rd_addr);
 
     byte_read   = I2C_Read(ACK);
     bcd         = DecimalToBCD(byte_read);
@@ -138,55 +139,55 @@ void Read_Temp(int tc74_addr)
 
 void SC406_Demo()
 {
-  int i2c_tc74_addr;
+  int i2c_sc406_rd;
   char *config_string;
 
-  config_string = ReadCfgItem("I2C.CFG", "TC74_ADDR");
+  config_string = ReadCfgItem("I2C.CFG", "SC406_RD");
   if (strcmp(config_string, "") == 0)
   {
     printf("SC406 not found\n");
   }
   else
   {
-    i2c_tc74_addr = (Hex2Int(config_string) << 1);
+    i2c_sc406_rd = Hex2Int(config_string);
 
     printf("\nSC406 Demonstration\n");
     printf("===================\n");
     printf("Reading and displaying temperature\n");
     printf("<Press any key to quit>\n\n");
-    Read_Temp(i2c_tc74_addr);
+    Read_Temp(i2c_sc406_rd);
     printf("===================\n");
   }
 }
 
 void SC407_Demo()
 {
-  int i2c_pcf_in;
-  int i2c_pcf_out;
+  int i2c_sc407_rd;
+  int i2c_sc407_wr;
 
   char *config_string;
 
-  config_string = ReadCfgItem("I2C.CFG", "PCF_IN");
+  config_string = ReadCfgItem("I2C.CFG", "SC407_RD");
   if (strcmp(config_string, "") == 0)
   {
     printf("SC407 not found\n");
   }
   else
   {
-    i2c_pcf_in = Hex2Int(config_string);
+    i2c_sc407_rd = Hex2Int(config_string);
 
-    config_string = ReadCfgItem("I2C.CFG", "PCF_OUT");
-    i2c_pcf_out = Hex2Int(config_string);
+    config_string = ReadCfgItem("I2C.CFG", "SC407_WR");
+    i2c_sc407_wr = Hex2Int(config_string);
 
     printf("\nSC407 Demonstration\n");
     printf("===================\n");
     printf("Flashing alternate LEDs\n");
     printf("<Press any key to continue>\n\n");
-    Flash_LEDs(i2c_pcf_out);
+    Flash_LEDs(i2c_sc407_wr);
 
     printf("Reading and display button values\n");
     printf("<Press any key to quit>\n\n");
-    Read_Buttons(i2c_pcf_in);
+    Read_Buttons(i2c_sc407_rd);
     printf("===================\n");
   }
 }
