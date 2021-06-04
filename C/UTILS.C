@@ -5,6 +5,7 @@
  * V1.0.0 29/05/2021
  */
 
+#include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -66,6 +67,15 @@ unsigned Hex2Int(char *hex)
       val = (val << 4) | (byte & 0xF);
     }
   return val;
+}
+
+void Pause(void)
+{
+  while(!kbhit())
+  {
+    /* do nothing */
+  }
+  getch();
 }
 
 /*

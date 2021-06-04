@@ -5,6 +5,7 @@
  */
 
 #include <I2C.H>
+#include <LCD.H>
 #include <UTILS.H>
 
 static int lcd_rd;
@@ -73,6 +74,11 @@ void LCD_Busy_Wait()
   }
 }
 
+void LCD_Clear(void)
+{
+  LCD_Cmd(0x01);
+}
+
 void LCD_Cmd(int byte)
 {
   I2C_Start();
@@ -88,7 +94,60 @@ void LCD_Cmd(int byte)
   LCD_Busy_Wait();
 }
 
-void LCD_Print(int byte)
+/*
+ * LCD row number 1 to 4
+ * LCD column number 1 to 20
+ */
+void LCD_Cursor(int row, int column)
+{
+  int cmd_byte = 0;
+
+  if (column < 1 | column > 20)
+  {
+    return;
+  }
+
+  if (row == 1)
+  {
+    cmd_byte = 0x80 + (column - 1);
+  }
+  else if (row == 2)
+  {
+    cmd_byte = 0xC0 + (column - 1);
+  }
+  else if (row == 3)
+  {
+    cmd_byte = 0x94 + (column - 1);
+  }
+  else if (row == 4)
+  {
+    cmd_byte = 0xD4 + (column - 1);
+  }
+  else
+  {
+    return;
+  }
+
+  LCD_Cmd(cmd_byte);
+}
+
+void LCD_Display(int dcb)
+{
+  LCD_Cmd(0x08 | dcb);
+}
+
+void LCD_Print(char * text)
+{
+  int index = 0;
+  
+  while(text[index] != 0)
+  {
+    LCD_Print_Char(text[index]);
+    index++;
+  }
+}
+
+void LCD_Print_Char(int byte)
 {
   I2C_Start();
   I2C_Write(lcd_wr);
