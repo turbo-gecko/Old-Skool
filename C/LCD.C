@@ -22,15 +22,8 @@ void LCD_Init(void)
   lcd_wr = Hex2Int(config_string);
 
   LCD_Cmd(0x00);
-  LCD_Cmd(0x03);
-  LCD_Cmd(0x03);
-  LCD_Cmd(0x03);
   LCD_Cmd(0x02);
-  LCD_Cmd(0x02);
-  LCD_Cmd(0x08);
-  LCD_Cmd(0x00);
-  LCD_Cmd(0x0C);
-  LCD_Cmd(0x00);
+  LCD_Cmd(0x28);
 }
 
 void LCD_Busy_Wait()

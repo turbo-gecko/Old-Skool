@@ -30,7 +30,7 @@ void LCD_Demo()
   printf("Writing to line 1\n");
   LCD_Display(LCD_ON);
   LCD_Cursor(1, 1);
-  LCD_Print("RC2014 I2C LCD");
+  LCD_Print("I2C LCD Demo");
   Pause();
 
   printf("Writing to line 2 with blinking cursor\n");
@@ -64,8 +64,8 @@ void LCD_Demo()
   printf("All done!\n");
   LCD_Clear();
   LCD_Display(LCD_ON);
-  LCD_Cursor(1, 2);
-  LCD_Print("RC2014 I2C LCD");
+  LCD_Cursor(1, 5);
+  LCD_Print("I2C LCD");
   LCD_Cursor(2, 2);
   LCD_Print("Demonstration");
   printf("===================\n");
