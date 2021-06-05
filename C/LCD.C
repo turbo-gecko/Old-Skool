@@ -1,7 +1,7 @@
 /*
  * I2C.C - I2C LCD driver by Gary Hammond
  *
- * V1.0.0 01/06/2021
+ * V1.0.0 05/06/2021
  */
 
 #include <I2C.H>
@@ -11,6 +11,11 @@
 static int lcd_rd;
 static int lcd_wr;
 
+/*
+ * Reads the read and write addresses from I2C.CFG file
+ * Initialises the LCD to 4 bit mode, 2 lines and 5x8 character font
+ * This function must be called first before using any other LCD function
+ */
 void LCD_Init(void)
 {
   char *config_string;
@@ -26,6 +31,11 @@ void LCD_Init(void)
   LCD_Cmd(0x28);
 }
 
+/*
+ * Reads the status of the busy flag from the LCD and will not return
+ * until the busy flag has been cleared.
+ * This is to allow the LCD to process the previous command/write.
+ */
 void LCD_Busy_Wait()
 {
   static unsigned char byte_read;
@@ -67,11 +77,17 @@ void LCD_Busy_Wait()
   }
 }
 
+/*
+ * Sends the command to clear the LCD display.
+ */
 void LCD_Clear(void)
 {
   LCD_Cmd(0x01);
 }
 
+/*
+ * Writes a command byte to the LCD.
+ */
 void LCD_Cmd(int byte)
 {
   I2C_Start();
@@ -88,7 +104,7 @@ void LCD_Cmd(int byte)
 }
 
 /*
- * LCD row number 1 to 4
+ * Sets the cursor to the LCD row number 1 to 4 and the
  * LCD column number 1 to 20
  */
 void LCD_Cursor(int row, int column)
@@ -124,11 +140,24 @@ void LCD_Cursor(int row, int column)
   LCD_Cmd(cmd_byte);
 }
 
+/*
+ * Sends the command to set the LCD disply settings for 
+ * - display on/off (LCD_ON)
+ * - cursor on/off (LCD_CURSOR)
+ * - blink on/off (LCD_BLINK)
+ * Do a logical or of the above 3 constants for passing into the function
+ * i.e., LCD_Display(LCD_ON | LCD_CURSOR | LCD_BLINK); Using a constant
+ * indicates that that setting should be 'on'.
+ */
 void LCD_Display(int dcb)
 {
   LCD_Cmd(0x08 | dcb);
 }
 
+/*
+ * Prints a string of characters to the LCD display at the current cursor
+ * position
+ */
 void LCD_Print(char * text)
 {
   int index = 0;
@@ -140,6 +169,10 @@ void LCD_Print(char * text)
   }
 }
 
+/*
+ * Prints a single character to the LCD display at the current cursor
+ * position
+ */
 void LCD_Print_Char(int byte)
 {
   I2C_Start();
