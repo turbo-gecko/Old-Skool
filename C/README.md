@@ -31,6 +31,22 @@ To run type
 i2c_demo
 ```
 
+## I2C LCD Driver and demo program
+LCD.C is the driver software for incorporating into other programs for driving a 2x16 and 4x20 LCD display that has been fitted with an I2C interface in 4 bit mode. An example is https://handsontec.com/dataspecs/module/I2C_1602_LCD.pdf. These are quite cheap and can be easily found on Amazon and AliExpress. The driver has been tested with a 2 row 16 character display and a 4 row 20 character display.
+
+LCD_DEMO.C is an example program using the LCD.C driver.
+
+To build LCD_DEMO.C using HiTech C compiler, type the following on the command line
+
+```
+c -v lcd_demo.c i2c.c utils.c lcd.c
+```
+
+To run type
+```
+lcd_demo
+```
+
 ## SETPORT
 Setport is a command line utility for setting the output of an I/O port
 
