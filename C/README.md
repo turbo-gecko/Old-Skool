@@ -47,6 +47,8 @@ To run type
 lcd_demo
 ```
 
+The LCD read and write addresses are stored in the I2C.CFG file.
+
 ## SETPORT
 Setport is a command line utility for setting the output of an I/O port
 
