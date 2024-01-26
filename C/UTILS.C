@@ -1,7 +1,7 @@
 /*
  * Miscellaneous utility functions by Gary Hammond
  *
- * V1.0.1 30/05/2021 - Added BDCto Decimal and DecimalToBCD functions
+ * V1.0.1 30/05/2021 - Added BDCto Decimal and Decimal_To_BCD functions
  * V1.0.0 29/05/2021
  */
 
@@ -12,16 +12,16 @@
 
 #define MAX_LINE_SIZE   76
 #define MAX_KEY_SIZE    38
-#define MAX_VALUE_SIZE  38
+#define MAX_VALUE_SIZE  76
 
-char BCDToDecimal (char bcdByte)
+char BCD_To_Decimal (char bcd_byte)
 {
-   return((bcdByte / 16 * 10) + (bcdByte % 16));
+   return((bcd_byte / 16 * 10) + (bcd_byte % 16));
 }
 
-char DecimalToBCD (char decimalByte)
+char Decimal_To_BCD (char decimal_byte)
 {
- return (((decimalByte / 10) << 4) | (decimalByte % 10));
+ return (((decimal_byte / 10) << 4) | (decimal_byte % 10));
 }
 
 /*
@@ -41,9 +41,36 @@ void Delay(unsigned int count)
 }
 
 /*
+ * Displays a text file that is no longer than 80 characters per line
+ */
+void Display_File(char* filename)
+{
+  FILE *fp;
+  
+  char *result;
+  char line[82];
+
+  fp = fopen(filename, "r");
+
+  if (fp == NULL)
+  {
+    perror("Error while opening %s\n", filename);
+    exit(1);
+  }
+
+  result = fgets(line, 82, fp);
+  while(result != NULL)
+  {
+    printf("%s", result);
+    result = fgets(line, 82, fp);
+  }
+  fclose(fp);
+}
+
+/*
  * Converts a hex number in string format to an unsigned integer
  */
-unsigned Hex2Int(char *hex)
+unsigned Hex_To_Int(char *hex)
 {
   unsigned val = 0;
 
@@ -85,7 +112,7 @@ void Pause(void)
  * if the <key> is not found in the file.
  * Lines beginning with # are ignored as comments.
  */
-char * ReadCfgItem(char *filename, char *key)
+char * Read_Cfg_Item(char *filename, char *key)
 {
   FILE *fp;
   
@@ -94,7 +121,6 @@ char * ReadCfgItem(char *filename, char *key)
 
   static char line[MAX_LINE_SIZE];
   static char current_key[MAX_KEY_SIZE];
-  static char current_value[MAX_VALUE_SIZE];
 
   fp = fopen(filename, "r");
 
@@ -113,11 +139,13 @@ char * ReadCfgItem(char *filename, char *key)
       result = strchr(line, '=');
       if (result != NULL)
       {
-        sscanf(line, "%s=%s", current_key, current_value);
+        sscanf(line, "%s=", current_key);
         if (strcmp(current_key, key) == 0)
         {
           fclose(fp);
-          return current_value;
+          strcpy(&line[0], result + 1);
+          line[strlen(line) - 1] = 0;
+          return line;
         }
       }
     }
@@ -126,3 +154,4 @@ char * ReadCfgItem(char *filename, char *key)
   fclose(fp);
   return "";
 }
+

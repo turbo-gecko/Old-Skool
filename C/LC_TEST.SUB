@@ -1,0 +1,26 @@
+LCD_CLI
+LCD_CLI blarg
+LCD_CLI 1 hello
+LCD_CLI 0 0 should not work
+LCD_CLI 0 1 should not work
+LCD_CLI 1 0 should not work
+LCD_CLI blarg 1 should not work
+LCD_CLI 1 blarg should not work
+LCD_CLI CLEAR
+LCD_CLI 1 1 Row 1
+LCD_CLI 2 2 Row 2 col 2
+LCD_CLI OFF
+LCD_CLI ON
+LCD_CLI CLEAR
+LCD_CLI BLINK
+LCD_CLI 1 1 Blink row 1
+LCD_CLI 2 2 row 2 col 2
+LCD_CLI CLEAR
+LCD_CLI CURSOR
+LCD_CLI 1 1 Cursor row 1
+LCD_CLI 2 3 line 2 col 3
+LCD_CLI CLEAR
+LCD_CLI OFF
+LCD_CLI 1 2 hidden rows 1/2
+LCD_CLI 2 2 line 2 col 2
+LCD_CLI ON

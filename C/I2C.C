@@ -20,20 +20,20 @@ void I2C_Init(void)
 {
   char *config_string;
 
-  printf("Initialising I2C\n");
+  /* printf("Initialising I2C\n"); */
 
-  config_string = ReadCfgItem("I2C.CFG", "PORT");
-  i2c_port = Hex2Int(config_string);
+  config_string = Read_Cfg_Item("I2C.CFG", "PORT");
+  i2c_port = Hex_To_Int(config_string);
 
-  config_string = ReadCfgItem("I2C.CFG", "SDA_RD");
-  i2c_sda_rd = Hex2Int(config_string);
+  config_string = Read_Cfg_Item("I2C.CFG", "SDA_RD");
+  i2c_sda_rd = Hex_To_Int(config_string);
 
-  config_string = ReadCfgItem("I2C.CFG", "QUIES");
-  i2c_quies = Hex2Int(config_string);
+  config_string = Read_Cfg_Item("I2C.CFG", "QUIES");
+  i2c_quies = Hex_To_Int(config_string);
 
-  config_string = ReadCfgItem("I2C.CFG", "TYPE");
+  config_string = Read_Cfg_Item("I2C.CFG", "TYPE");
 
-  printf("Using %s on port %x\n", config_string, i2c_port);
+  /* printf("Using %s on port %x\n", config_string, i2c_port); */
 }
 
 unsigned char I2C_Read(char ack_flag)

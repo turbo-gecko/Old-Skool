@@ -1,0 +1,8 @@
+# English versions of messages
+M1=Column number must be 1 or more
+M2=Invalid command
+M3=Error initialising LCD
+M4=Row number must be 1 or more
+M5=Incorrect number of parameters
+
+# End of message file

@@ -3,9 +3,12 @@
  *
  * Tested with 2x16 and 4x20 LCD modules using I2C interface in 4 bit mode
  *
+ * V1.0.1 06/02/2022 - Added LCD_OFF
+ *                   - Added LCD_Busy_Timeout
  * V1.0.0 05/06/2021 - Initial version
  */
 
+#define LCD_OFF    0x00 /* Turn off the LCD display */
 #define LCD_BLINK  0x01 /* Blink at current cursor position */
 #define LCD_CURSOR 0x02 /* Turn on the cursor underscore */
 #define LCD_ON     0x04 /* Turn on the LCD display backlighting */
@@ -14,8 +17,18 @@
  * Reads the read and write addresses from I2C.CFG file
  * Initialises the LCD to 4 bit mode, 2 lines and 5x8 character font
  * This function must be called first before using any other LCD function
+ * Returns 0 if successful.
  */
-void LCD_Init(void);
+unsigned char LCD_Init(void);
+
+/*
+ * Reads the status of the busy flag from the LCD and will not return
+ * until the busy flag has been cleared or the timeout occurs.
+ * This is to allow the LCD to process the previous command/write.
+ * Returns 0 if busy flag is no longer busy and >0 if the LCD
+ * is still busy after the timeout period.
+ */
+unsigned char LCD_Busy_Timeout(void);
 
 /*
  * Reads the status of the busy flag from the LCD and will not return
@@ -32,7 +45,7 @@ void LCD_Clear(void);
 /*
  * Writes a command byte to the LCD.
  */
-void LCD_Cmd(int);
+unsigned char LCD_Cmd(int);
 
 /*
  * Sets the cursor to the LCD row number 1 to 4 and the

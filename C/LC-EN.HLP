@@ -1,0 +1,19 @@
+LCD_CLI <BLINK|CLEAR|CURSOR|OFF|ON|HELP>
+LCD_CLI <row> <column> <text>...<text>
+
+Commands  : BLINK  Turns on the blinking block.
+            CLEAR  Clears all characters from the display.
+            CURSOR Turns on the underscore cursor.
+            OFF    Stops displaying text on the display. The characters are
+                   still in the LCD's RAM so can be re-displayed by using
+                   the ON command.
+            ON     Turns on the displaying of characters.
+            HELP   Displays this help information.
+
+<row>     : The row number to output text to. The first row is 1
+<column>  : The column number to output text to. The first column is 1
+<text>    : A collection of characters. A collection of characters is
+            seperated by white space. Quotes cannot be used to enclosed a
+            block of text and will be displayed as a quote on the LCD
+            display. CP/M converts all characters to uppercase when passed
+            from the command line.
