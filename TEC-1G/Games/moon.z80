@@ -2,22 +2,22 @@
                                         ;
                                         ;  26th Feb 2024
 
-           org		1000h
+           .org		1000h
                                         ;  ---------
                                         ;  Constants
                                         ;  ---------
 
-LCD_1:     EQU		80h
-LCD_2:     EQU		0c0h
-LCD_3:     EQU		94h
-LCD_4:     EQU		0d4h
+LCD_1:     .EQU		80h
+LCD_2:     .EQU		0c0h
+LCD_3:     .EQU		94h
+LCD_4:     .EQU		0d4h
 
-C_BURN:    EQU		0
-C_FUEL:    EQU		300
-C_HEIGHT:  EQU		500
-C_THRTL:   EQU		0
-C_TIME:    EQU		0
-C_VEL:     EQU		50
+C_BURN:    .EQU		0
+C_FUEL:    .EQU		300
+C_HEIGHT:  .EQU		500
+C_THRTL:   .EQU		0
+C_TIME:    .EQU		0
+C_VEL:     .EQU		50
 
 ANY_KEY_P: .db		"Press any key",0
 THRTL_P:   .db		"Throttle? (00-99) - ",0
@@ -55,7 +55,7 @@ TEMP_W:    .db		"00000",0
 
 EOV        .db		0ffh
 
-           org		4000h
+           .org		4000h
                                         ;  ------------
                                         ;  Main Program
                                         ;  ------------
@@ -583,4 +583,4 @@ DEBUG:     ld		hl,BURN         ;  ** DEBUG ** Dump variables
 
            ret
 
-
+	   .end
