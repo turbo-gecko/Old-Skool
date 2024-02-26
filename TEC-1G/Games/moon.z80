@@ -1,571 +1,586 @@
                                         ;  Moon Lander
                                         ;
-                                        ;  7 Feb 2024
+                                        ;  26th Feb 2024
 
-          org		1000h
+           org		1000h
                                         ;  ---------
                                         ;  Constants
                                         ;  ---------
 
-LCD_1:    EQU		80h
-LCD_2:    EQU		0c0h
-LCD_3:    EQU		94h
-LCD_4:    EQU		0d4h
+LCD_1:     EQU		80h
+LCD_2:     EQU		0c0h
+LCD_3:     EQU		94h
+LCD_4:     EQU		0d4h
 
-C_BURN:   EQU		0
-C_FUEL:   EQU		300
-C_HEIGHT: EQU		500
-C_THRTL:  EQU		0
-C_TIME:   EQU		0
-C_VEL:    EQU		50
+C_BURN:    EQU		0
+C_FUEL:    EQU		300
+C_HEIGHT:  EQU		500
+C_THRTL:   EQU		0
+C_TIME:    EQU		0
+C_VEL:     EQU		50
 
 ANY_KEY_P: .db		"Press any key",0
-THRTL_P:  .db		"Throttle? (00-99) - ",0
+THRTL_P:   .db		"Throttle? (00-99) - ",0
 
-BUMPY_M:  .db		"** Bumpy landing! **",0
-CRASH_M:  .db		"Crashed! - All dead ",0
-GOOD_M:   .db		"** Great landing! **",0
-INTRO_M:  .db		" -= Moon Lander! =- ",0
+BUMPY_M:   .db		"** Bumpy landing! **",0
+CRASH_M:   .db		"Crashed! - All dead ",0
+GOOD_M:    .db		"** Great landing! **",0
+INTRO_M:   .db		" -= Moon Lander! =- ",0
 NO_FUEL_M: .db		" <EMPTY>",0
 
-BURN_T:   .db           "Fuel Burn ",0
-FUEL_T:   .db		"Fuel ",0
-HEIGHT_T: .db		"Height ",0
-s_TIME_T: .db		"Time ",0
-THRTL_T:  .db           "Throttle (%) ",0
-TIME_T:   .db		" T ",0
-VEL_T:    .db		"Vel. ",0
-VEL1_T:   .db		"Vel1. ",0
+BURN_T:    .db		"Fuel Burn ",0
+FUEL_T:    .db		"Fuel ",0
+HEIGHT_T:  .db		"Height ",0
+s_TIME_T:  .db		"Time ",0
+THRTL_T:   .db		"Throttle (%) ",0
+TIME_T:    .db		" T ",0
+VEL_T:     .db		"Vel. ",0
+VEL1_T:    .db		"Vel1. ",0
 
                                         ;  ---------
                                         ;  Variables
                                         ;  ---------
-BURN:     .db		0
-FUEL:     .dw		300
-HEIGHT:   .dw		500
-THRTL:    .db           0
-TIME:     .db		0
-VEL:      .dw		50
-VEL1:     .dw		0
-V_AVG:    .dw		0
+BURN:      .db		0
+FUEL:      .dw		300
+HEIGHT:    .dw		500
+THRTL:     .db		0
+TIME:      .db		0
+VEL:       .dw		50
+VEL1:      .dw		0
+V_AVG:     .dw		0
 
-TEMP_B:   .db           0
-TEMP_D:   .dw           0
-TEMP_W:   .db           "00000",0
+TEMP_B:    .db		0
+TEMP_D:    .dw		0
+TEMP_W:    .db		"00000",0
 
-EOV       .db           0ffh
+EOV        .db		0ffh
 
-          org		4000h
+           org		4000h
                                         ;  ------------
                                         ;  Main Program
                                         ;  ------------
 
-START:    call		CLEAR_LCD       ;  Clear the LCD
+START:     call		CLEAR_LCD       ;  Clear the LCD
 
-          ld		a,C_BURN        ;  Initialise variables
-          ld		(BURN),a
+           ld		a,C_BURN        ;  Initialise variables
+           ld		(BURN),a
 
-          ld		a,C_THRTL
-          ld		(THRTL),a
+           ld		a,C_THRTL
+           ld		(THRTL),a
 
-          ld		hl,C_FUEL
-          ld		(FUEL),hl
+           ld		hl,C_FUEL
+           ld		(FUEL),hl
 
-          ld		hl,C_HEIGHT
-          ld		(HEIGHT),hl
+           ld		hl,C_HEIGHT
+           ld		(HEIGHT),hl
 
-          ld		a,C_TIME
-          ld		(TIME),a
+           ld		a,C_TIME
+           ld		(TIME),a
 
-          ld		hl,C_VEL
-          ld		(VEL),hl
-          ld		(VEL1),hl
+           ld		hl,C_VEL
+           ld		(VEL),hl
+           ld		(VEL1),hl
 
-INTRO:    ld		hl,INTRO_M      ;  Display the intro message
-          ld		c,13
-          rst		10h
+INTRO:     ld		hl,INTRO_M      ;  Display the intro message
+           ld		c,13
+           rst		10h
 
-          ld		a,LCD_4         ;  Move cursor to LCD line 4...
-          ld		b,a
-          ld		c,15
-          rst		10h
+           ld		a,LCD_4         ;  Move cursor to LCD line 4...
+           ld		b,a
+           ld		c,15
+           rst		10h
 
-          ld		hl,ANY_KEY_P    ;  ...and display the wait message
-          ld		c,13
-          rst		10h
+           ld		hl,ANY_KEY_P    ;  ...and display the wait message
+           ld		c,13
+           rst		10h
 
-          call		KEY_WAIT        ;  Wait for a key press
+           call		KEY_WAIT        ;  Wait for a key press
 
-LOOP:     call          SER_STAT	; Send the current stats to the serial port
+LOOP:      call		SER_STAT        ;  Send the current stats to the serial port
 
-          call		STATS           ;  Display the current stats on the LCD
-          call		GET_THRTL        ;  Prompt for and get the new throttle value
+           call		STATS           ;  Display the current stats on the LCD
+           call		GET_THRTL       ;  Prompt for and get the new throttle value
 
-          ld		a,(TIME)	; Update the time counter
-          inc		a
-          ld		(TIME),a
+           ld		a,(TIME)        ;  Update the time counter
+           inc		a
+           ld		(TIME),a
 
-          call		CALC_F		; Calculate how much fuel is left
-          call		CALC_V		; Calculate the velocity of the lander
+           call		CALC_F          ;  Calculate how much fuel is left
+           call		CALC_V          ;  Calculate the velocity of the lander
 
-LOOP_1:   call		CALC_H		; Calculate the height above the Biddleonian moon surface
+LOOP_1:    call		CALC_H          ;  Calculate the height above the Biddleonian moon surface
 
-	  ld            hl,(HEIGHT)     ;  Have we landed?
-	  ld            de,1
-	  sbc           hl,de
-          bit		7,h             ;  Check to see if the height is now negative
-          jr		nz,LANDED	; If so, we have landed...
+           ld		hl,(HEIGHT)     ;  Have we landed?
+           ld		de,1
+           sbc		hl,de
+           bit		7,h             ;  Check to see if the height is now negative
+           jr		nz,LANDED       ;  If so, we have landed...
 
-          jp		LOOP
+           jp		LOOP
 
-LANDED:   ld		hl,0            ;  Set the height to the moons surface
-	  ld		(HEIGHT),hl
+LANDED:    ld		hl,0            ;  Set the height to the moons surface
+           ld		(HEIGHT),hl
 
-          call		STATS		; Update the stats on the LCD
+           call		STATS           ;  Update the stats on the LCD
 
-          ld		a,LCD_4       ;  Move cursor to the beginning of LCD line 4...
-          ld		b,a		; ...in readiness for the landing message
-          ld		c,15
-          rst		10h
+           ld		a,LCD_4         ;  Move cursor to the beginning of LCD line 4...
+           ld		b,a             ;  ...in readiness for the landing message
+           ld		c,15
+           rst		10h
 
-	  ld		a,(VEL)		; If we have 0 velocity we have nailed it!
-	  cp	        0
-	  jr		z,GOOD
+           ld		a,(VEL)         ;  If we have 0 velocity we have nailed it!
+           cp		0
+           jr		z,GOOD
 
-	  sub           5		; If we have a velocity of 5 or less, it's a bumpy landing
-	  bit		7,a
-	  jr		nz,BUMPY
+           sub		5               ;  If we have a velocity of 5 or less, it's a bumpy landing
+           bit		7,a
+           jr		nz,BUMPY
 
-          ld		hl,CRASH_M      ;  We have crashed!
-          ld		c,13
-          rst		10h
-	  jr            END
+           ld		hl,CRASH_M      ;  We have crashed!
+           ld		c,13
+           rst		10h
+           jr		END
 
-BUMPY:    ld		hl,BUMPY_M      ;  A bumpy landing
-          ld		c,13
-          rst		10h
-          jr		END
+BUMPY:     ld		hl,BUMPY_M      ;  A bumpy landing
+           ld		c,13
+           rst		10h
+           jr		END
 
-GOOD:     ld		hl,GOOD_M      ;  Nailed it!
-          ld		c,13
-          rst		10h
+GOOD:      ld		hl,GOOD_M       ;  Nailed it!
+           ld		c,13
+           rst		10h
 
-END:	  call          KEY_WAIT        ; Leave the landing message on the LCD. Wait for a key press
+END:       call		KEY_WAIT        ;  Leave the landing message on the LCD. Wait for a key press
 
-          rst		00h             ;  All done!
+           rst		00h             ;  All done!
 
 
                                         ;  -----------
                                         ;  Subroutines
                                         ;  -----------
-CALC_F:   ld		hl,(FUEL)       ;  Calculate fuel
-          ld		d,0
-          ld		a,(THRTL)       ; Burn is 1/4 of throttle %
-          srl           a
-          srl           a
-          ld            (BURN),a
-          ld		e,a
-          and		a
-          sbc		hl,de
-          jr            nc,CF_1         ;  Check for no fuel left
-	  ld            hl,0
-	  ld		a,0
-	  ld            (BURN),a
+CALC_F:    ld		hl,(FUEL)       ;  Calculate fuel
+           ld		d,0
+           ld		a,(THRTL)       ;  Burn is 1/4 of throttle %
+           srl		a
+           srl		a
+           ld		(BURN),a
+           ld		e,a
+           and		a
+           sbc		hl,de
+           jr		nc,CF_1         ;  Check for no fuel left
+           ld		hl,0
+           ld		a,0
+           ld		(BURN),a
 
-CF_1      ld		(FUEL),hl       ;  Update fuel
+CF_1       ld		(FUEL),hl       ;  Update fuel
 
-          ret
+           ret
 
-CALC_H:   ld		hl,(HEIGHT)     ;  Calculate the new height
-          ld		bc,(V_AVG)
-          and		a
-          sbc		hl,bc
-          ld		(HEIGHT),hl
+CALC_H:    ld		hl,(HEIGHT)     ;  Calculate the new height
+           ld		bc,(V_AVG)
+           and		a
+           sbc		hl,bc
+           ld		(HEIGHT),hl
 
-          ret
+           ret
 
-CALC_V:   ld		hl,(VEL)        ;  Calculate the new velocity...
-          ld		bc,(BURN)
-          and		a
-          sbc		hl,bc
-          ld		bc,5
-          add		hl,bc           ;  ...then add 5 to it (Biddleonian physics)
-          ld		(VEL1),hl
+CALC_V:    ld		hl,(VEL)        ;  Calculate the new velocity...
+           ld		b,0
+           ld		a,(BURN)
+           ld		c,a
+           and		a
+           sbc		hl,bc
+           ld		bc,5
+           add		hl,bc           ;  ...then add 5 to it (Biddleonian physics)
+           ld		(VEL1),hl
 
-          ld		bc,(VEL)        ;  Get the average of the old and new velocities
-          add		hl,bc
-          bit		7,h             ;  Check to see if we have a negative number
-          jr		nz,CV_1
-          srl		h               ;  Divide by 2
-          jr		CV_2
-CV_1      srl		h
-          set		7,h
-CV_2      rr		l
-          ld		(V_AVG),hl
+           ld		bc,(VEL)        ;  Get the average of the old and new velocities
+           add		hl,bc
+           bit		7,h             ;  Check to see if we have a negative number
+           jr		nz,CV_1
+           srl		h               ;  Divide by 2
+           jr		CV_2
+CV_1       srl		h
+           set		7,h
+CV_2       rr		l
+           ld		(V_AVG),hl
 
-          ld		hl,(VEL1)
-          ld		(VEL),hl
+           ld		hl,(VEL1)
+           ld		(VEL),hl
 
-          ret
+           ret
 
-CLEAR_LCD: rst		28h             ;  Clear the LCD
-          ld		a,01h
-          out		(04),a
-          rst		28H             ;  Check LCD busy flag
+CLEAR_LCD: rst		28h             ;  Wait for LCD to not be busy before...
 
-          ret
+           ld		a,01h           ;  ...sending the LCD clear command and...
+           out		(04),a
+           rst		28H             ;  ...wait for it to complete
+
+           ret
                                         ;  ----------
 GET_THRTL: ld		a,LCD_4         ;  Move cursor to the beginning of LCD line 4
-          ld		b,a
-          ld		c,15
-          rst		10h
+           ld		b,a
+           ld		c,15
+           rst		10h
 
-          ld		hl,THRTL_T       ;  Display the prompt for the throtle %
-          ld		c,13
-          rst		10h
+           ld		hl,THRTL_T      ;  Display the prompt for the throttle %
+           ld		c,13
+           rst		10h
 
-GB_1:     rst		08h             ;  Check for key press
-          cp		10
-          jr		c,GB_2
-          jr		GB_1
+GB_1:      rst		08h             ;  Check for key press
+           cp		10
+           jr		c,GB_2
+           jr		GB_1
 
-GB_2:     ld		l,a
-          ld		c,3             ;  Beep
-          rst		10h
+GB_2:      ld		l,a
+           ld		c,3             ;  Beep
+           rst		10h
 
-          ld		a,l             ;  Multiply the key press by 10
-          rlc		a               ;  x2
-          rlc		a               ;  x4
-          rlc		a               ;  x8
-          add		a,l             ;  +key
-          add		a,l             ;  +key
-          ld		(THRTL),a        ;  store first digit
-          push		af
+           ld		a,l             ;  Multiply the key press by 10
+           rlc		a               ;  x2
+           rlc		a               ;  x4
+           rlc		a               ;  x8
+           add		a,l             ;  +key
+           add		a,l             ;  +key
+           ld		(THRTL),a       ;  Store first digit
+           push		af
 
-GB_3:     rst		08h             ;  Check for key press
-          ld		b,a             ;  Store key value returned
-          cp		10
-          jr		c,GB_4
-          jr		GB_3
+GB_3:      rst		08h             ;  Check for key press
+           ld		b,a             ;  Store key value returned
+           cp		10
+           jr		c,GB_4
+           jr		GB_3
 
-GB_4:     ld		l,a
-          ld		c,3             ;  Beep
-          rst		10h
+GB_4:      ld		l,a
+           ld		c,3             ;  Beep
+           rst		10h
 
-          pop		af              ;  Get first digit
-          ld		(THRTL),a
-          ld		l,a
-          call		L_TO_ASC
+           pop		af              ;  Get first digit
+           ld		(THRTL),a
+           ld		l,a
+           call		L_TO_ASC
 
-          ret
+           ret
                                         ;  ----------
 HL_TO_ASC: ld		bc,-10000       ;  Convert the 16 bit value in HL to it's ASCII equivalent
-          call		HTA_1
-          ld		bc,-1000
-          call		HTA_1
-          ld		bc,-100
-          call		HTA_1
-          ld		c,-10
-          call		HTA_1
-          ld		c,-1
-HTA_1:    ld		a,'0'-1
+           call		HTA_1
+           ld		bc,-1000
+           call		HTA_1
+           ld		bc,-100
+           call		HTA_1
+           ld		c,-10
+           call		HTA_1
+           ld		c,-1
+HTA_1:     ld		a,'0'-1
 
-HTA_2:    inc		a
-          add		hl,bc
-          jr		c,HTA_2
-          sbc		hl,bc
-          ld		c,14            ;  Send ASCII character to the LCD
-          rst		10h
-          ret
+HTA_2:     inc		a
+           add		hl,bc
+           jr		c,HTA_2
+           sbc		hl,bc
+           ld		c,14            ;  Send ASCII character to the LCD
+           rst		10h
+           ret
                                         ;  ----------
-KEY_WAIT: ld		c,11h
-          rst		10h
-          ret
+KEY_WAIT:  ld		c,11h
+           rst		10h
+           ret
                                         ;  ----------
-L_TO_ASC: ld		h,0             ;  Convert the 8 bit value in L to it's ASCII equivalent
-          ld		bc,-100
-          call		LTA_1
-          ld		c,-10
-          call		LTA_1
-          ld		c,-1
+L_TO_ASC:  ld		h,0             ;  Convert the 8 bit value in L to it's ASCII equivalent
+           ld		bc,-100
+           call		LTA_1
+           ld		c,-10
+           call		LTA_1
+           ld		c,-1
 
-LTA_1:    ld		a,'0'-1
+LTA_1:     ld		a,'0'-1
 
-LTA_2:    inc		a
-          add		hl,bc
-          jr		c,LTA_2
-          sbc		hl,bc
-          ld		c,14            ;  Send ASCII character to the LCD
-          rst		10h
-          ret
+LTA_2:     inc		a
+           add		hl,bc
+           jr		c,LTA_2
+           sbc		hl,bc
+           ld		c,14            ;  Send ASCII character to the LCD
+           rst		10h
+           ret
                                         ;  ----------
-STATS:    call		CLEAR_LCD       ;  Clear the LCD
-
-          ld		hl,HEIGHT_T     ;  Display the height above the surface
-          ld		c,13
-          rst		10h
-
-          ld		hl,(HEIGHT)
-          call		HL_TO_ASC
+STATS:     call		CLEAR_LCD       ;  Clear the LCD
+
+           ld		hl,HEIGHT_T     ;  Display the height above the surface
+           ld		c,13
+           rst		10h
+
+           ld		hl,(HEIGHT)
+           call		HL_TO_ASC
+
+           ld		hl,TIME_T       ;  Display the current time sequence
+           ld		c,13
+           rst		10h
 
-          ld		hl,TIME_T       ;  Display the current time sequence
-          ld		c,13
-          rst		10h
+           ld		a,(TIME)
+           ld		l,a
+           call		L_TO_ASC
+
+           ld		a,LCD_2         ;  Move cursor to the beginning of LCD line 2
+           ld		b,a
+           ld		c,15
+           rst		10h
+
+           ld		hl,FUEL_T       ;  Display the amount of the fuel left
+           ld		c,13
+           rst		10h
+
+           ld		hl,(FUEL)
+           call		HL_TO_ASC
+
+           ld		hl,(FUEL)       ;  Check for no fuel left
+           ld		bc,0
+           sbc		hl,bc
+           jr		nz,STATS_1
+
+           ld		hl,NO_FUEL_M    ;  Display the no fuel warning
+           ld		c,13
+           rst		10h
+
+STATS_1:   ld		a,LCD_3         ;  Move cursor to the beginning of LCD line 3
+           ld		b,a
+           ld		c,15
+           rst		10h
+
+           ld		hl,VEL_T        ;  Display the current velocity
+           ld		c,13
+           rst		10h
+
+           ld		hl,(VEL1)
+           bit		7,h             ;  Check for negative velocity
+           jr		z,STATS_2
+           ex		de,hl
+           ld		hl,0
+           sbc		hl,de
+           ld		(TEMP_D),hl
+
+           ld		a,'+'
+           ld		c,14            ;  Send ASCII character to the LCD
+           rst		10h
+
+           ld		hl,(TEMP_D)
+           jr		STATS_3
+
+STATS_2:   ld		a,'-'
+           ld		c,14            ;  Send ASCII character to the LCD
+           rst		10h
+
+STATS_3:   call		HL_TO_ASC
+
+           ld		a,LCD_4         ;  Move cursor to the beginning of LCD line 4
+           ld		b,a
+           ld		c,15
+           rst		10h
+
+           ld		hl,THRTL_T      ;  Display the prompt for the burn rate
+           ld		c,13
+           rst		10h
 
-          ld		a,(TIME)
-          ld		l,a
-          call		L_TO_ASC
+           ld		a,(THRTL)
+           ld		l,a
+           call		L_TO_ASC
 
-          ld		a,LCD_2         ;  Move cursor to the beginning of LCD line 2
-          ld		b,a
-          ld		c,15
-          rst		10h
+           ret
+
+                                        ;  ----------
+                                        ;  Send a single character out the serial port
+SER_BYTE:  ld		de,TEMP_D       ;  'a' should already be loaded with the byte to tx
+           ld		c,09
+           rst		10h
 
-          ld		hl,FUEL_T       ;  Display the amount of the fuel left
-          ld		c,13
-          rst		10h
+           ld		hl,(TEMP_D)     ;  Send out the serial port
+           ld		a,(TEMP_D)
+           ld		c,22
+           rst		10h
+
+           ld		a,(TEMP_D+1)
+           ld		c,22
+           rst		10h
 
-          ld		hl,(FUEL)
-          call		HL_TO_ASC
+           ret
 
-          ld		hl,(FUEL)       ;  Check for no fuel left
-          ld		bc,0
-          sbc		hl,bc
-          jr		nz,STATS_1
+                                        ;  ----------
+                                        ;  Send a CR/LF pair out the serial port
+SER_CRLF:  ld		a,13
+           ld		c,22
+           rst		10h
+
+           ld		a,10
+           ld		c,22
+           rst		10h
 
-          ld		hl,NO_FUEL_M    ;  Display the no fuel warning
-          ld		c,13
-          rst		10h
+           ret
 
-STATS_1:  ld		a,LCD_3         ;  Move cursor to the beginning of LCD line 3
-          ld		b,a
-          ld		c,15
-          rst		10h
+                                        ;  ----------
+                                        ;  Send a string pointed to by HL out the serial port
+SER_STR:   ld		a,(hl)
+           cp		0
+           jr		z,SS_1
 
-          ld		hl,VEL_T        ;  Display the current velocity
-          ld		c,13
-          rst		10h
+           ld		c,22
+           rst		10h
+           inc		hl
+           jr		SER_STR
 
-          ld		hl,(VEL1)
-          bit           7,h          ;  Check for negative velocity
-          jr            z,STATS_2
-          ex		de,hl
-          ld		hl,0
-          sbc           hl,de
-          ld		(TEMP_D),hl
+SS_1:      ret
 
-          ld		a,'+'
-          ld		c,14            ;  Send ASCII character to the LCD
-          rst		10h
+                                        ;  ----------
+                                        ;  Send a formatted 16 bit value out the serial port
+SER_WORD:  ld		de,TEMP_W       ;  hl should already be loaded with the word to tx
+           ld		c,08
+           rst		10h
+           ld		a,0
+           ld		(de),a
 
-          ld		hl,(TEMP_D)
-          jr		STATS_3
+           ld		hl,TEMP_W
+           call		SER_STR
 
-STATS_2:  ld		a,'-'
-          ld		c,14            ;  Send ASCII character to the LCD
-          rst		10h
+           ret
 
-STATS_3:  call		HL_TO_ASC
+                                        ;  ----------
+                                        ;  Send the stats out the serial port
+SER_STAT:  ld		c,20            ;  Enable serial port
+           rst		10h
 
-	  ld		a,LCD_4         ;  Move cursor to the beginning of LCD line 4
-          ld		b,a
-          ld		c,15
-          rst		10h
+           ld		hl,S_TIME_T
+           call		SER_STR
 
-          ld		hl,THRTL_T       ;  Display the prompt for the burn rate
-          ld		c,13
-          rst		10h
+           ld		a,(TIME)
+           ld		h,0
+           ld		l,a
+           call		SER_HL2D
+           ld		hl,TEMP_W
+           call		SER_STR
 
-          ld		a,(THRTL)
-          ld		l,a
-          call		L_TO_ASC
+           call		SER_CRLF
 
-          ret
+           ld		hl,HEIGHT_T
+           call		SER_STR
 
-SER_BYTE: ld            de,TEMP_D       ;  'a' should already be loaded with the byte to tx
-	  ld            c,09
-	  rst           10h
+           ld		hl,(HEIGHT)
+           call		SER_HL2D
+           ld		hl,TEMP_W
+           call		SER_STR
+
+           call		SER_CRLF
 
-          ld            hl,(TEMP_D)     ;  Send out the serial port
-          ld            a,(TEMP_D)
-          ld            c,22
-          rst           10h
-
-          ld            a,(TEMP_D+1)
-          ld            c,22
-          rst           10h
-
-          ret
-
-SER_CRLF: ld            a,13
-          ld            c,22
-          rst           10h
-
-          ld            a,10
-          ld            c,22
-          rst           10h
-
-          ret
-
-SER_STR:  ld		a,(hl)
-          cp            0
-          jr            z,SS_1
-
-          ld            c,22
-          rst           10h
-          inc		hl
-          jr            SER_STR
-
-SS_1:     ret
-
-SER_WORD: ld            de,TEMP_W       ;  hl should already be loaded with the word to tx
-	  ld            c,08
-	  rst           10h
-	  ld            a,0
-	  ld            (de),a
-
-	  ld		hl,TEMP_W
-	  call          SER_STR
-
-          ret
-
-SER_STAT: ld            c,20            ;  Enable serial port
-          rst           10h
-
-	  ld		hl,S_TIME_T
-	  call          SER_STR
-
-          ld		a,(TIME)
-          ld            h,0
-          ld            l,a
-          call          SER_HL2D
-          ld            hl,TEMP_W
-	  call          SER_STR
-
-	  call          SER_CRLF
-
-	  ld		hl,HEIGHT_T
-	  call          SER_STR
-
-          ld		hl,(HEIGHT)
-          call          SER_HL2D
-          ld            hl,TEMP_W
-	  call          SER_STR
-
-	  call          SER_CRLF
-
-          ld		hl,FUEL_T
-	  call          SER_STR
-
-          ld		hl,(FUEL)
-          call          SER_HL2D
-          ld            hl,TEMP_W
-	  call          SER_STR
-
-	  call          SER_CRLF
-
-          ld		hl,VEL_T
-	  call          SER_STR
-
-          ld		hl,(VEL)
-          bit           7,h          ;  Check for negative falling velocity
-          jr            z,SST_1
-          ex		de,hl
-          ld		hl,0
-          sbc           hl,de
-
-	  jr 		SST_1a
-
-SST_1:    ld            a,'-'
-          ld            c,22
-          rst           10h
-
-SST_1a:   call          SER_HL2D
-          ld            hl,TEMP_W
-	  call          SER_STR
-
-	  call          SER_CRLF
-
-          ld		hl,VEL1_T
-	  call          SER_STR
-
-          ld		hl,(VEL1)
-          bit           7,h          ;  Check for negative falling velocity
-          jr            z,SST_1b
-          ex		de,hl
-          ld		hl,0
-          sbc           hl,de
-
-          jr 		SST_2
-
-SST_1b:   ld            a,'-'
-          ld            c,22
-          rst           10h
-
-SST_2:    call          SER_HL2D
-          ld            hl,TEMP_W
-	  call          SER_STR
-
-	  call          SER_CRLF
-
-	  ld		hl,BURN_T
-	  call          SER_STR
-
-          ld		a,(BURN)
-          ld            h,0
-          ld            l,a
-          call          SER_HL2D
-          ld            hl,TEMP_W
-	  call          SER_STR
-
-	  call          SER_CRLF
-
-	  ld		hl,THRTL_T
-	  call          SER_STR
-
-          ld		a,(THRTL)
-          ld            h,0
-          ld            l,a
-          call          SER_HL2D
-          ld            hl,TEMP_W
-	  call          SER_STR
-
-	  call          SER_CRLF
-	  call          SER_CRLF
-
-          ;call          DEBUG
-
-          ld            c,21            ;  Disable serial port
-          rst           10h
-
-          ret
-
-SER_HL2D: ld            de,TEMP_W
-          ld		bc,-10000       ;  Convert the 16 bit value in HL to it's ASCII equivalent
-          call		H2D_1
-          ld		bc,-1000
-          call		H2D_1
-          ld		bc,-100
-          call		H2D_1
-          ld		c,-10
-          call		H2D_1
-          ld		c,-1
-H2D_1:    ld		a,'0'-1
-
-H2D_2:    inc		a
-          add		hl,bc
-          jr		c,H2D_2
-          sbc		hl,bc
-          ld            (de),a
-          inc           de
-
-          ret
-
-DEBUG:    ld            hl,BURN        ;  ** DEBUG ** Dump variables
-	  ld            de,EOV-BURN
-	  ld            c,28
-	  rst           10h
-
-	  ret
+           ld		hl,FUEL_T
+           call		SER_STR
+
+           ld		hl,(FUEL)
+           call		SER_HL2D
+           ld		hl,TEMP_W
+           call		SER_STR
+
+           call		SER_CRLF
+
+           ld		hl,VEL_T
+           call		SER_STR
+
+           ld		hl,(VEL)
+           bit		7,h             ;  Check for negative falling velocity
+           jr		z,SST_1
+           ex		de,hl
+           ld		hl,0
+           sbc		hl,de
+
+           jr		SST_1a
+
+SST_1:     ld		a,'-'
+           ld		c,22
+           rst		10h
+
+SST_1a:    call		SER_HL2D
+           ld		hl,TEMP_W
+           call		SER_STR
+
+           call		SER_CRLF
+
+           ld		hl,VEL1_T
+           call		SER_STR
+
+           ld		hl,(VEL1)
+           bit		7,h             ;  Check for negative falling velocity
+           jr		z,SST_1b
+           ex		de,hl
+           ld		hl,0
+           sbc		hl,de
+
+           jr		SST_2
+
+SST_1b:    ld		a,'-'
+           ld		c,22
+           rst		10h
+
+SST_2:     call		SER_HL2D
+           ld		hl,TEMP_W
+           call		SER_STR
+
+           call		SER_CRLF
+
+           ld		hl,BURN_T
+           call		SER_STR
+
+           ld		a,(BURN)
+           ld		h,0
+           ld		l,a
+           call		SER_HL2D
+           ld		hl,TEMP_W
+           call		SER_STR
+
+           call		SER_CRLF
+
+           ld		hl,THRTL_T
+           call		SER_STR
+
+           ld		a,(THRTL)
+           ld		h,0
+           ld		l,a
+           call		SER_HL2D
+           ld		hl,TEMP_W
+           call		SER_STR
+
+           call		SER_CRLF
+           call		SER_CRLF
+
+           ;call        DEBUG
+
+           ld		c,21            ;  Disable serial port
+           rst		10h
+
+           ret
+
+                                        ;  ----------
+SER_HL2D:  ld		de,TEMP_W       ;  Convert the 16 bit value in HL to it's ASCII equivalent
+           ld		bc,-10000       ;  for use in serial comms
+           call		H2D_1
+           ld		bc,-1000
+           call		H2D_1
+           ld		bc,-100
+           call		H2D_1
+           ld		c,-10
+           call		H2D_1
+           ld		c,-1
+H2D_1:     ld		a,'0'-1
+
+H2D_2:     inc		a
+           add		hl,bc
+           jr		c,H2D_2
+           sbc		hl,bc
+           ld		(de),a
+           inc		de
+
+           ret
+
+                                        ;  ----------
+DEBUG:     ld		hl,BURN         ;  ** DEBUG ** Dump variables
+           ld		de,EOV-BURN
+           ld		c,28
+           rst		10h
+
+           ret
 
 
