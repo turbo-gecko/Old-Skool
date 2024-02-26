@@ -20,7 +20,7 @@ C_TIME:    .EQU		0
 C_VEL:     .EQU		50
 
 ANY_KEY_P: .db		"Press any key",0
-THRTL_P:   .db		"Throttle? (00-99) - ",0
+THRTL_P:   .db		"Throttle 00-99 ? ",0
 
 BUMPY_M:   .db		"** Bumpy landing! **",0
 CRASH_M:   .db		"Crashed! - All dead ",0
@@ -223,8 +223,17 @@ GET_THRTL: ld		a,LCD_4         ;  Move cursor to the beginning of LCD line 4
            ld		c,15
            rst		10h
 
-           ld		hl,THRTL_T      ;  Display the prompt for the throttle %
+           ld		hl,THRTL_P      ;  Display the prompt for the throttle %
            ld		c,13
+           rst		10h
+
+           ld		a,(THRTL)
+           ld		l,a
+           call		L_TO_ASC
+
+	   ld		a,LCD_4 + 17    ;  Move cursor to data entry on LCD line 4
+           ld		b,a
+           ld		c,15
            rst		10h
 
 GB_1:      rst		08h             ;  Check for key press
@@ -243,7 +252,6 @@ GB_2:      ld		l,a
            add		a,l             ;  +key
            add		a,l             ;  +key
            ld		(THRTL),a       ;  Store first digit
-           push		af
 
 GB_3:      rst		08h             ;  Check for key press
            ld		b,a             ;  Store key value returned
@@ -251,12 +259,15 @@ GB_3:      rst		08h             ;  Check for key press
            jr		c,GB_4
            jr		GB_3
 
-GB_4:      ld		l,a
+GB_4:      push		bc
+	   ld		l,a
            ld		c,3             ;  Beep
            rst		10h
 
-           pop		af              ;  Get first digit
-           ld		(THRTL),a
+	   pop		bc
+           ld		a,(THRTL)       ;  Get first digit
+           add		a,b
+           ld           (THRTL),a
            ld		l,a
            call		L_TO_ASC
 
