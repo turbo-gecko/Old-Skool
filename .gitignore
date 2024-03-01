@@ -1,8 +1,9 @@
 
 C/LCD_CLI.BORG.ghamm.pui
+*.bak
+*.lst
+*.obj
 *.prj
 *.pui
-*.obj
-*.lst
 temp*.*
 *autosave*.asm
