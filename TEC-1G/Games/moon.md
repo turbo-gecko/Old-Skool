@@ -19,8 +19,9 @@ Try to have your throttle position just above the lunar surface at such a point 
 The program has been tested with TASM 3.2 using the command line 
 `tasm -80 -g0 moon.asm moon.hex`
 
-Near the top of moon.asm, there are 2 #defines that can be enabled for debugging to the serial port.
-There main starting parameters are listed as constants that can be adjusted to change the games behaviour.
+Near the top of moon.asm, there are 2 #defines. SERIAL_OUT_EN enables the stats to be sent out the serial port. You can capture a game this way. DUMP is for debugging and is rarely, if ever, used.
+
+The main starting parameters are listed as constants that can be adjusted to change the games initial state.
 
 ## To Do ##
   - Display 'how to play' instructions.
