@@ -1,6 +1,6 @@
 # Moon #
 
-!(Moon.jpg)
+![Lunar Lander](Moon.jpg)
 
 The poeple of Biddlelonia are about to make their first landing on their moon with their second lander. It has been a fully automated trip so far, but for the final descent you have to manually adjust the main engine throttle for a smooth touchdown!
 
