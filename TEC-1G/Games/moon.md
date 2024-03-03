@@ -30,4 +30,8 @@ The main starting parameters are listed as constants that can be adjusted to cha
   - Add bar graphs on the LCD for height and velocity.
   - Graphical shenanigans on the graphical LCD.
 
-This is very much a 'work in progress'!
+## Notes ##
+This is very much a 'work in progress' and will have bugs!
+I have not done Z80 assembler coding for nearly 30 years so I am essentially starting from scratch again. Seasoned Z80 ASM coders will undoubtedly find a bunch of issues and inefficiencies and thats OK. This is a simple game and my intent is to learn as much about the TEC-1G's capabilities and to demonstrate what it can do in a single program.
+The game is for me a learning exercise. I hope others get to learn from it as well and take whatever they may find useful to incorporate into their own projects.
+Enjoy!
