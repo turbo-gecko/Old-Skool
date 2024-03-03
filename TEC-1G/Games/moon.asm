@@ -14,7 +14,7 @@
 ; Using the serial port disables the use of the disco LEDs as they
 ; share a common control line which results in garbage being sent to
 ; the serial port whilst the disco LED's are operating.
-#define     SERIAL_OUT_EN
+;#define     SERIAL_OUT_EN
 
 ;---------------------------------------------------------------------
 ; Constants
@@ -479,12 +479,6 @@ SCAN_7_SEG: ld      hl,(FUEL)
             ld      (TIMER_1),hl
 
 S7S_1:
-#ifndef SERIAL_OUT_EN
-            ld      a,40h               ; Light up the disco LED's
-            out     (01),a
-            ld      a,22h
-            out     (02),a
-#endif
             ld      hl,(FUEL)           ; Check to see if there is still fuel
             ld      bc,0
             sbc     hl,bc
