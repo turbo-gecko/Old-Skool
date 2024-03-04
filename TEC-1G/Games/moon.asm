@@ -36,13 +36,15 @@ FUEL_FLASH  .equ    0200h
 
             .org    1000h
 
-ANY_KEY_P   .db     "Press any key",0
+ANY_KEY_P   .db     "   Press any key    ",0
 THRTL_P     .db     "Throttle 00-99 ? ",0
 
 BUMPY_M     .db     "** Bumpy landing! **",0
 CRASH_M     .db     "Crashed! - All dead ",0
 GOOD_M      .db     "** Great landing! **",0
-INTRO_M     .db     " -= Moon Lander! =- ",0
+INTRO_1_M   .db     " -= Moon Lander! =- ",0
+INTRO_2_M   .db     "  Press 00 - 99 to  ",0
+INTRO_3_M   .db     " adjust the descent ",0
 NO_FUEL_M   .db     " <EMPTY>",0
 
 BURN_T      .db     "Fuel Burn ",0
@@ -102,7 +104,25 @@ START:      call    CLEAR_LCD       ; Clear the LCD
             ld      (VEL1),hl
             ld      (V_AVG),hl
 
-INTRO:      ld      hl,INTRO_M      ; Display the intro message
+INTRO:      ld      hl,INTRO_1_M    ; Display the intro message
+            ld      c,13
+            rst     10h
+
+            ld      a,LCD_2         ; Move cursor to LCD line 2
+            ld      b,a
+            ld      c,15
+            rst     10h
+
+            ld      hl,INTRO_2_M
+            ld      c,13
+            rst     10h
+
+            ld      a,LCD_3         ; Move cursor to LCD line 3
+            ld      b,a
+            ld      c,15
+            rst     10h
+
+            ld      hl,INTRO_3_M
             ld      c,13
             rst     10h
 
